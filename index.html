@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Library System</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+}
+
+/* Video Background */
+#bg-video{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    z-index:-1;
+}
+
+/* Overlay */
+body::before{
+    content:"";
+    position:fixed;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.7);
+    z-index:-1;
+}
+
+.navbar{
+    position:fixed;
+    top:0;
+    width:100%;
+    padding:15px 40px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background:rgba(0,0,0,0.6);
+}
+
+/* group buttons in one line */
+.nav-buttons{
+    display:flex;
+    gap:15px;
+}
+
+/* button style */
+.nav-buttons button{
+    padding:8px 20px;
+    border-radius:25px;   /* makes it rounded */
+    border:1px solid rgba(255,255,255,0.2);
+    background:transparent;
+    color:white;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+/* hover effect */
+.nav-buttons button:hover{
+    background:#00c9a7;
+    color:black;
+}
+
+/* active button (selected one) */
+.nav-buttons button.active{
+    background:#00c9a7;
+    color:black;
+}
+
+.navbar h2{
+    color:#00c9a7;
+}
+
+.navbar button{
+    padding:8px 15px;
+    margin-left:10px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+/* Container */
+.container{
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+/* Card */
+.card{
+    background:rgba(255,255,255,0.08);
+    backdrop-filter:blur(20px);
+    padding:30px;
+    border-radius:20px;
+    width:320px;
+    text-align:center;
+}
+
+/* Inputs */
+input{
+    width:100%;
+    padding:10px;
+    margin:10px 0;
+    border:none;
+    border-radius:10px;
+}
+
+/* Buttons */
+.btn{
+    width:100%;
+    
+    padding:10px;
+    border:none;
+    border-radius:10px;
+    background:#00c9a7;
+    color:white;
+    cursor:pointer;
+}
+
+/* Sections */
+.section{
+    display:none;
+}
+
+/* About */
+.about{
+    position:absolute;
+    bottom:20px;
+    width:100%;
+    text-align:center;
+    color:#ddd;
+    font-size:14px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- 🎥 Video -->
+<video autoplay muted loop id="bg-video">
+    <source src="WhatsApp Video 2026-03-21 at 1.22.50 PM.mp4" type="video/mp4">
+</video>
+
+<!-- Navbar -->
+<div class="navbar">
+    <h2>📚 LibraSys</h2>
+    <div>
+        <button onclick="show('login')">Login</button>
+        <button onclick="show('signup')">Sign Up</button>
+        <button onclick="show('about')">About</button>
+    </div>
+</div>
+
+<!-- Container -->
+<div class="container">
+
+    <!-- LOGIN -->
+    <div id="login" class="card section" style="display:block;">
+        <h2>Login</h2>
+
+        <input type="email" placeholder="Email">
+        <input type="password" placeholder="Password">
+
+        <!-- Two Login Options -->
+    
+        <button class="btn" onclick="loginUser()">Login as User</button>
+<button class="btn" style="margin-top:10px;" onclick="loginAdmin()">Login as Admin</button>
+    </div>
+
+    <!-- SIGNUP -->
+    <div id="signup" class="card section">
+        <h2>Sign Up</h2>
+
+        <input type="text" placeholder="Name">
+        <input type="email" placeholder="Email">
+        <input type="password" placeholder="Password">
+
+        <button class="btn">Create Account</button>
+    </div>
+
+    <!-- ABOUT -->
+    <div id="about" class="card section">
+        <h2>About Us</h2>
+        <p>
+            This Library Management System helps users manage books easily.
+            You can add, issue, and return books with a simple interface.
+            Designed with modern UI and smooth experience for students and admins.
+        </p>
+    </div>
+
+</div>
+
+<!-- Footer -->
+<div class="about">
+    Library Management System © 2026
+</div>
+
+<script>
+function show(section){
+    document.querySelectorAll('.section').forEach(s=>{
+        s.style.display="none";
+    });
+    document.getElementById(section).style.display="block";
+}
+
+function loginUser(){
+    window.location.href = "userdashboard.html";
+}
+
+function loginAdmin(){
+    window.location.href = "admindashboard.html";
+}
+
+
+</script>
+
+</body>
+</html>

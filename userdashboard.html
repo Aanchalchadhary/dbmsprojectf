@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>User Dashboard</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    display: flex;
+    height: 100vh;
+    background: linear-gradient(135deg, #1e1e2f, #2c3e50);
+    color: white;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 250px;
+    background: rgba(255,255,255,0.05);
+    padding: 20px;
+}
+
+.sidebar h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.sidebar button {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.1);
+    color: white;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.sidebar button:hover {
+    background: #00c9a7;
+}
+
+/* ✅ Glow Active Button */
+.sidebar button.active {
+    background: #00c9a7;
+    box-shadow: 0 0 10px #00c9a7, 0 0 20px #00c9a7;
+    transform: scale(1.05);
+}
+
+/* Main */
+.main {
+    flex: 1;
+    padding: 20px;
+}
+
+/* Card */
+.card {
+    background: rgba(255,255,255,0.08);
+    padding: 20px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+}
+
+/* Inputs */
+input {
+    padding: 10px;
+    margin: 5px;
+    border-radius: 8px;
+    border: none;
+}
+
+/* Button */
+.btn {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 8px;
+    background: #00c9a7;
+    color: white;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background: #00a896;
+}
+
+/* Table */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 12px;
+    text-align: center;
+}
+
+th {
+    background: #00c9a7;
+}
+
+tr:nth-child(even) {
+    background: rgba(255,255,255,0.05);
+}
+</style>
+</head>
+
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <h2>📚 LibraSys</h2>
+    <button class="nav-btn" onclick="showSection('books', this)">View Books</button>
+    <button class="nav-btn" onclick="showSection('cart', this)">My Cart</button>
+    <button class="nav-btn" onclick="showSection('search', this)">Search Book</button>
+    <button class="nav-btn" onclick="showSection('issue', this)">Request Issue</button>
+    <button class="nav-btn" onclick="showSection('mybooks', this)">My Books</button>
+</div>
+
+<!-- Main -->
+<div class="main">
+
+    <!-- Books -->
+    <div id="books" class="card">
+        <h2>All Books</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Available</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="bookList"></tbody>
+        </table>
+    </div>
+
+    <!-- Cart -->
+    <div id="cart" class="card" style="display:none;">
+        <h2>🛒 My Cart</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Book ID</th>
+                    <th>Title</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="cartList"></tbody>
+        </table>
+
+        <br>
+        <input id="cartUserId" placeholder="Enter Your ID">
+        <button class="btn" onclick="issueAll()">Issue All</button>
+    </div>
+
+    <!-- Search -->
+    <div id="search" class="card" style="display:none;">
+        <h2>Search Book</h2>
+        <input id="searchText" placeholder="Enter title">
+        <button class="btn" onclick="searchBook()">Search</button>
+
+        <table>
+            <tbody id="searchResult"></tbody>
+        </table>
+    </div>
+
+    <!-- Issue -->
+    <div id="issue" class="card" style="display:none;">
+        <h2>Request Book Issue</h2>
+        <input id="bookId" placeholder="Book ID">
+        <input id="userId" placeholder="Your ID">
+        <button class="btn" onclick="requestIssue()">Request</button>
+    </div>
+
+    <!-- My Books -->
+    <div id="mybooks" class="card" style="display:none;">
+        <h2>My Issued Books</h2>
+        <input id="myId" placeholder="Enter Your ID">
+        <button class="btn" onclick="loadMyBooks()">Load</button>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Book ID</th>
+                    <th>Issue Date</th>
+                    <th>Return Date</th>
+                    <th>Fine</th>
+                </tr>
+            </thead>
+            <tbody id="myBooksList"></tbody>
+        </table>
+    </div>
+
+</div>
+
+<script>
+
+let cart = [];
+
+/* Show Section + Glow */
+function showSection(section, btn){
+    document.querySelectorAll('.card').forEach(c=>{
+        c.style.display="none";
+    });
+
+    document.getElementById(section).style.display="block";
+
+    document.querySelectorAll('.nav-btn').forEach(b=>{
+        b.classList.remove("active");
+    });
+
+    btn.classList.add("active");
+}
+
+/* Load Books */
+async function loadBooks(){
+    const res = await fetch("http://localhost:5000/books");
+    const data = await res.json();
+
+    let rows = "";
+    data.forEach(b=>{
+        rows += `<tr>
+            <td>${b.book_id}</td>
+            <td>${b.title}</td>
+            <td>${b.available_copies}</td>
+            <td>
+                <button class="btn" onclick='addToCart(${JSON.stringify(b)})'>Add</button>
+            </td>
+        </tr>`;
+    });
+
+    document.getElementById("bookList").innerHTML = rows;
+}
+
+/* Cart */
+function addToCart(book){
+    const exists = cart.find(b => b.book_id === book.book_id);
+
+    if(!exists){
+        cart.push(book);
+        updateCart();
+        alert("Added to cart!");
+    } else {
+        alert("Already in cart!");
+    }
+}
+
+function updateCart(){
+    let rows = "";
+
+    cart.forEach((b, index)=>{
+        rows += `<tr>
+            <td>${b.book_id}</td>
+            <td>${b.title}</td>
+            <td>
+                <button onclick="removeFromCart(${index})">Remove</button>
+            </td>
+        </tr>`;
+    });
+
+    document.getElementById("cartList").innerHTML = rows;
+}
+
+function removeFromCart(index){
+    cart.splice(index,1);
+    updateCart();
+}
+
+/* Issue All */
+async function issueAll(){
+    const userId = document.getElementById("cartUserId").value;
+
+    for(let b of cart){
+        await fetch("http://localhost:5000/issue-book", {
+            method:"POST",
+            headers:{"Content-Type":"application/json"},
+            body: JSON.stringify({
+                book_id: b.book_id,
+                member_id: userId
+            })
+        });
+    }
+
+    alert("All books issued!");
+    cart = [];
+    updateCart();
+}
+
+/* Search */
+async function searchBook(){
+    const text = document.getElementById("searchText").value;
+
+    const res = await fetch("http://localhost:5000/books");
+    const data = await res.json();
+
+    let rows = "";
+    data.filter(b => b.title.toLowerCase().includes(text.toLowerCase()))
+        .forEach(b=>{
+            rows += `<tr>
+                <td>${b.book_id}</td>
+                <td>${b.title}</td>
+                <td>${b.available_copies}</td>
+            </tr>`;
+        });
+
+    document.getElementById("searchResult").innerHTML = rows;
+}
+
+/* Single Issue */
+async function requestIssue(){
+    await fetch("http://localhost:5000/issue-book", {
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({
+            book_id: bookId.value,
+            member_id: userId.value
+        })
+    });
+
+    alert("Request Sent!");
+}
+
+/* My Books */
+async function loadMyBooks(){
+    const id = document.getElementById("myId").value;
+
+    const res = await fetch(`http://localhost:5000/my-books/${id}`);
+    const data = await res.json();
+
+    let rows = "";
+    data.forEach(b=>{
+        rows += `<tr>
+            <td>${b.book_id}</td>
+            <td>${b.issue_date}</td>
+            <td>${b.return_date || "Not Returned"}</td>
+            <td>${b.fine || 0}</td>
+        </tr>`;
+    });
+
+    document.getElementById("myBooksList").innerHTML = rows;
+}
+
+/* Default Load */
+loadBooks();
+document.querySelector('.nav-btn').classList.add("active");
+
+</script>
+
+</body>
+</html>
