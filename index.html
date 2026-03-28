@@ -163,29 +163,23 @@ input{
 <!-- Container -->
 <div class="container">
 
-    <!-- LOGIN -->
     <div id="login" class="card section" style="display:block;">
-        <h2>Login</h2>
+    <h2>Login</h2>
+    <input type="email" id="loginEmail" placeholder="Email">
+    <input type="password" id="loginPassword" placeholder="Password">
+    <button class="btn" onclick="handleLogin('user')">Login as User</button>
+    <button class="btn" style="margin-top:10px;" onclick="handleLogin('admin')">Login as Admin</button>
+</div>
 
-        <input type="email" placeholder="Email">
-        <input type="password" placeholder="Password">
+<div id="signup" class="card section">
+    <h2>Sign Up</h2>
+    <input type="text" id="regName" placeholder="Name">
+    <input type="email" id="regEmail" placeholder="Email">
+    <input type="password" id="regPassword" placeholder="Password">
+    <button class="btn" onclick="handleSignup()">Create Account</button>
+</div>
 
-        <!-- Two Login Options -->
-    
-        <button class="btn" onclick="loginUser()">Login as User</button>
-<button class="btn" style="margin-top:10px;" onclick="loginAdmin()">Login as Admin</button>
-    </div>
-
-    <!-- SIGNUP -->
-    <div id="signup" class="card section">
-        <h2>Sign Up</h2>
-
-        <input type="text" placeholder="Name">
-        <input type="email" placeholder="Email">
-        <input type="password" placeholder="Password">
-
-        <button class="btn">Create Account</button>
-    </div>
+   
 
     <!-- ABOUT -->
     <div id="about" class="card section">
@@ -205,20 +199,40 @@ input{
 </div>
 
 <script>
-function show(section){
-    document.querySelectorAll('.section').forEach(s=>{
-        s.style.display="none";
+    async function handleLogin(role) {
+    const email = document.getElementById('loginEmail').value;
+    const pass = document.getElementById('loginPassword').value;
+
+    const response = await fetch('http://localhost:5000/login', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ email, password: pass, role: role })
     });
-    document.getElementById(section).style.display="block";
+
+    const data = await response.json();
+    if (data.success) {
+        window.location.href = role === 'admin' ? "admindashboard.html" : "userdashboard.html";
+    } else {
+        alert(data.message);
+    }
 }
 
-function loginUser(){
-    window.location.href = "userdashboard.html";
-}
 
-function loginAdmin(){
-    window.location.href = "admindashboard.html";
-}
+
+// function show(section){
+//     document.querySelectorAll('.section').forEach(s=>{
+//         s.style.display="none";
+//     });
+//     document.getElementById(section).style.display="block";
+// }
+
+// function loginUser(){
+//     window.location.href = "userdashboard.html";
+// }
+
+// function loginAdmin(){
+//     window.location.href = "admindashboard.html";
+// }
 
 
 </script>

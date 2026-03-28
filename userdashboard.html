@@ -174,12 +174,22 @@ tr:nth-child(even) {
     </div>
 
     <!-- Issue -->
-    <div id="issue" class="card" style="display:none;">
+    <!-- <div id="issue" class="card" style="display:none;">
         <h2>Request Book Issue</h2>
         <input id="bookId" placeholder="Book ID">
         <input id="userId" placeholder="Your ID">
         <button class="btn" onclick="requestIssue()">Request</button>
-    </div>
+    </div> -->
+
+    <div id="issue" class="card" style="display:none;">
+    <h2>Request Book Issue</h2>
+
+    <!-- Added proper IDs -->
+    <input type="number" id="bookId" placeholder="Enter Book ID">
+    <input type="number" id="userId" placeholder="Enter Your ID">
+
+    <button class="btn" onclick="requestIssue()">Request</button>
+</div>
 
     <!-- My Books -->
     <div id="mybooks" class="card" style="display:none;">
@@ -330,29 +340,60 @@ async function requestIssue(){
 }
 
 /* My Books */
-async function loadMyBooks(){
-    const id = document.getElementById("myId").value;
+// async function loadMyBooks(){
+//     const id = document.getElementById("myId").value;
 
-    const res = await fetch(`http://localhost:5000/my-books/${id}`);
-    const data = await res.json();
+//     const res = await fetch(`http://localhost:5000/my-books/${id}`);
+//     const data = await res.json();
 
-    let rows = "";
-    data.forEach(b=>{
-        rows += `<tr>
-            <td>${b.book_id}</td>
-            <td>${b.issue_date}</td>
-            <td>${b.return_date || "Not Returned"}</td>
-            <td>${b.fine || 0}</td>
-        </tr>`;
-    });
+//     let rows = "";
+//     data.forEach(b=>{
+//         rows += `<tr>
+//             <td>${b.book_id}</td>
+//             <td>${b.issue_date}</td>
+//             <td>${b.return_date || "Not Returned"}</td>
+//             <td>${b.fine || 0}</td>
+//         </tr>`;
+//     });
 
-    document.getElementById("myBooksList").innerHTML = rows;
+//     document.getElementById("myBooksList").innerHTML = rows;
+// }
+
+// /* Default Load */
+// loadBooks();
+// document.querySelector('.nav-btn').classList.add("active");
+
+
+// Request Issue Function (Fixed)
+async function requestIssue() {
+    const bookId = document.getElementById("bookId").value;
+    const userId = document.getElementById("userId").value;
+
+    if (!bookId || !userId) {
+        alert("Please enter both Book ID and User ID");
+        return;
+    }
+
+    try {
+        const response = await fetch("http://localhost:5000/issue-book", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                book_id: bookId,
+                member_id: userId
+            })
+        });
+
+        const data = await response.json();
+
+        alert(data.message || "Request Sent Successfully!");
+    } catch (error) {
+        alert("Error while sending request!");
+        console.error(error);
+    }
 }
-
-/* Default Load */
-loadBooks();
-document.querySelector('.nav-btn').classList.add("active");
-
 </script>
 
 </body>
